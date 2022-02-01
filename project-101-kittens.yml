@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Kittens website
+Resources:
+  myec2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "ami-0a8b4cd432b1c3063"
+      InstanceType: "t2.micro"
+      SecurityGroups:
+        - !Ref mysecgroup
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #! /bin/bash
+            yum update -y
+            yum install httpd -y
+            systemctl start httpd
+            systemctl enable httpd
+            sudo chmod -R 777 /var/www/html
+            cd /var/www/html
+            wget https://raw.githubusercontent.com/D1348-Kenan/project-101-kittens-static-website/main/static-web/index.html
+            wget https://raw.githubusercontent.com/D1348-Kenan/project-101-kittens-static-website/main/static-web/cat0.jpg
+            wget https://raw.githubusercontent.com/D1348-Kenan/project-101-kittens-static-website/main/static-web/cat1.jpg
+            wget https://raw.githubusercontent.com/D1348-Kenan/project-101-kittens-static-website/main/static-web/cat2.jpg
+            wget https://raw.githubusercontent.com/D1348-Kenan/project-101-kittens-static-website/main/static-web/cat3.png
+  mysecgroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "enables ssh and http" # Required
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
